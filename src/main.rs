@@ -85,11 +85,17 @@ fn get_uncompressed_public_key_from_private_key(private_key: &str) -> String {
 }
 
 // https://en.bitcoin.it/wiki/Wallet_import_format
-fn get_wif_private_key(private_key: &String) -> String {
+fn get_wif_private_key(private_key: &String, is_testnet: bool) -> String {
     // 0x80 is used for the version/application byte
     // https://river.com/learn/terms/w/wallet-import-format-wif/#:~:text=WIF%20format%20adds%20a%20prefix,should%20use%20compressed%20SEC%20format.
     let version_application_byte_for_mainnet = "80";
     let version_application_byte_for_testnet = "ef";
+
+    let version_application_byte = if is_testnet {
+        version_application_byte_for_testnet
+    } else {
+        version_application_byte_for_mainnet
+    };
     let private_key_hex = decode_hex(&private_key).unwrap();
     let version_array = decode_hex(version_application_byte_for_testnet).unwrap();
     // What does check encodings do?
@@ -110,14 +116,19 @@ fn get_public_key_hash(public_key: &String) -> String {
 
 // This is for p2pkh. P2sh requires us to get address from redeem script:
 //      Source: https://en.bitcoin.it/wiki/Base58Check_encoding
-fn get_address_from_pub_key_hash(public_key_hash: &String) -> String {
+fn get_address_from_pub_key_hash(public_key_hash: &String, is_testnet: bool) -> String {
     // SEE ALL VERSION APPLICATION CODES HERE: https://en.bitcoin.it/wiki/List_of_address_prefixes
     let p2pkh_version_application_byte = "00";
     let p2pkh_testnet_version_application_byte = "6f";
     let p2sh_version_application_byte = "05";
 
+    let version_application_byte = if is_testnet {
+        p2pkh_testnet_version_application_byte
+    } else {
+        p2pkh_version_application_byte
+    };
     let hex_array = Vec::from_hex(public_key_hash).unwrap();
-    let version_array = decode_hex(p2pkh_testnet_version_application_byte).unwrap();
+    let version_array = decode_hex(version_application_byte).unwrap();
     let a = concat_u8(&version_array, &hex_array);
     // What does check encodings do?
     //   - does a sha25 twice, then gets the first 4 bytes of that Result
@@ -128,15 +139,16 @@ fn get_address_from_pub_key_hash(public_key_hash: &String) -> String {
 }
 
 fn main() {
+    let is_testnet = true;
     let private_key = create_private_key();
     println!("private key: {}", &private_key);
     let public_key = get_uncompressed_public_key_from_private_key(&private_key);
     println!("public_key {}", public_key);
-    let wif_private_key = get_wif_private_key(&private_key);
+    let wif_private_key = get_wif_private_key(&private_key, is_testnet);
     println!("wif_private_key: {}", wif_private_key);
     let public_key_hash = get_public_key_hash(&public_key);
     println!("public_key_hash: {}", public_key_hash);
-    let address = get_address_from_pub_key_hash(&public_key_hash);
+    let address = get_address_from_pub_key_hash(&public_key_hash, is_testnet);
     println!("address: {}", address);
     // println!("{}", private_key.bytes().len());
     // println!("{}", private_key)
