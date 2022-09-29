@@ -60,9 +60,18 @@ name = "create-bitcoin-address"
 version = "0.1.0"
 dependencies = [
  "bitcoin",
+ "create-bitcoin-private-key",
  "rand",
  "secp256k1",
  "sha256",
+]
+
+[[package]]
+name = "create-bitcoin-private-key"
+version = "0.1.0"
+source = "git+https://github.com/joegesualdo/create-bitcoin-private-key?rev=8de0e1cc99ed41293571eba9c32de24f77dfd6c1#8de0e1cc99ed41293571eba9c32de24f77dfd6c1"
+dependencies = [
+ "rand",
 ]
 
 [[package]]

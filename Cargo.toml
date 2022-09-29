@@ -10,3 +10,4 @@ rand = "=0.8.5"
 secp256k1 = "=0.24.0"
 bitcoin = "=0.29.1"
 sha256 = "=1.0.3"
+create-bitcoin-private-key = { git = "https://github.com/joegesualdo/create-bitcoin-private-key", rev = "8de0e1cc99ed41293571eba9c32de24f77dfd6c1" }
